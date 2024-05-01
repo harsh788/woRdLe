@@ -3,24 +3,21 @@ import numpy as np
 
 class WordleEnv:
     def __init__(self, word_length=5, max_attempts=6, subset_size=None):
-        #Length of wordle words, 5
         self.word_length = word_length
-        # Possible number of attempts in wordle, 6
         self.max_attempts = max_attempts
-        # We will store the target word in this
         self.target_word = ''
-        # Initializations for the attempts, we will update this when we reset the environment
         self.attempts_left = 0
         self.attempts = 0
-        # Current actions will be stored in this variable
         self.current_guess = ''
+
         # Opening the txt file containing possible words and get a random subset of them if necessary
-        with open('data/previous_wordles.txt', 'r') as f:
-        #with open('data/wordle_words.txt', 'r') as f:
+        with open('data/wordle_actual.txt', 'r') as f:
+        #with open('data/wordle_subset.txt', 'r') as f:
             words = [word.strip().upper() for word in f.readlines() if len(word.strip()) == word_length]
             if subset_size is not None:
                 words = self.get_random_subset(words, subset_size)
             self.words = words
+
         # State space has 78 dimensions (3 for each letter, gray, yellow, and green states)
         self.state_size = 78
         # Possible actions are the number of words in the dataset
@@ -69,7 +66,6 @@ class WordleEnv:
         self.attempts = 0
         self.current_guess = '_' * self.word_length
         self.available_actions = list(range(self.action_size))
-        #self.available_actions = self.words
         self.current_state = np.zeros(self.state_size, dtype=np.float32)
         
         return self.current_state
@@ -102,7 +98,6 @@ class WordleEnv:
     
     # In each turn, get the new state based on the correctness of the letters
     def get_state(self):
-        #state = np.zeros(self.state_size, dtype=np.float32)
         state = self.current_state
         # Check each letter of the guess
         for idx, letter in enumerate(self.current_guess):
